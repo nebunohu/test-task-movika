@@ -1,0 +1,78 @@
+@font-face {
+  font-family: 'Open Sans';
+  src: url('../media/OpenSans-Regular.ttf');
+}
+
+.plugin-wrapper {
+  position: relative;
+  width: 667px;
+  height: 375px;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+}
+
+.video {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.decoration {
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+}
+
+.decoration.left {
+  left: 20px;
+}
+
+.decoration.left.inner {
+  left: 25px;
+}
+
+.decoration.right {
+  right: 20px;
+  transform: translate(0, -50%) rotate(0.5turn);
+}
+
+.decoration.right.inner {
+  right: 25px;
+}
+
+.timer {
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+  font-family: 'Open Sans';
+  color: white;
+  font-size: 16px;
+}
+
+.timer.left {
+  left: 55px;
+}
+
+.timer.right {
+  right: 55px;
+}
+
+.play-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 100;
+}
+
+.play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
