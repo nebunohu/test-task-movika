@@ -13,7 +13,9 @@ export default class VideoPlugin {
   }
 
   wrapper = null;
+  migrateContainer = null;
   timerNodes = [];
+  playButtonNode = null;
   videos = [];
   videoContainer = null;
   currentSrc = null;
@@ -65,7 +67,7 @@ export default class VideoPlugin {
 
     wrapper.append(decoration1, decoration11, decoration2, decoration21, timerLeft, timerRight);
 
-    this.wrapper = wrapper;
+    // this.wrapper = wrapper;
 
     return wrapper;
   }
@@ -99,25 +101,70 @@ export default class VideoPlugin {
         this.videoContainer.play();
       } else {
         this.pressedSuccess();
-        this.videoContainer.paused();
+        this.videoContainer.pause();
       }
       this.state.play = !this.state.play;
     });
 
+    // this.playButtonNode = playWrapper;
+
     return playWrapper;
+  }
+
+  makeVideoContainer = () => {
+    const videoContainer = document.createElement('video');
+    videoContainer.autoplay = true;
+    videoContainer.autobuffer = true;
+    videoContainer.src = this.videos[0];
+    videoContainer.classList.add('video');
+
+    return videoContainer;
+  }
+
+  passNewCoords = () => {
+    const generateRandom = () => Math.random() * ((Math.random() < 0.5) ? -1 : 1) * 20;
+    const playStyles = getComputedStyle(this.playButtonNode);
+    const playHeight = parseInt(playStyles.height);
+    const playWidth = parseInt(playStyles.width);
+    const migrateContainerStyles = getComputedStyle(this.migrateContainer);
+    const migrateContainerHeight = parseInt(migrateContainerStyles.height);
+    const migrateContainerWidth = parseInt(migrateContainerStyles.width);
+    const top = parseInt(playStyles.top);
+    const left = parseInt(playStyles.left); 
+    const deltaTop = generateRandom();
+    const deltaLeft = generateRandom();
+    if (top + deltaTop < playHeight) {
+      this.playButtonNode.style.top = `${playHeight / 2}px`;
+    } else if (top + deltaTop > migrateContainerHeight - playHeight / 2) {
+      this.playButtonNode.style.top = `${migrateContainerHeight - playHeight / 2}px`;
+    } else {
+      this.playButtonNode.style.top = `${top + deltaTop}px`;
+    }
+    if (left + deltaLeft < 0 + playWidth / 2) {
+      this.playButtonNode.style.left = `${playWidth / 2}`;
+    } else if (left + deltaLeft > migrateContainerWidth - playWidth / 2) {
+      this.playButtonNode.style.left = `${migrateContainerWidth - playWidth / 2}px`;
+    } else {
+      this.playButtonNode.style.left = `${left + deltaLeft}px`;
+    }
   }
 
   init = (root) => {
     
-    const wrapper = this.makeContainer();
-    wrapper.append(this.makePlayButton());
+    this.wrapper = this.makeContainer();
 
-    this.videoContainer = document.createElement('video');
-    this.videoContainer.autoplay = true;
-    this.videoContainer.autobuffer = true;
-    this.videoContainer.src = this.videos[0];
-    this.videoContainer.classList.add('video');
-    wrapper.append(this.videoContainer);
+    const overlay = document.createElement('div');
+    overlay.classList.add('overlay');
+
+    this.migrateContainer = document.createElement('div');
+    this.migrateContainer.classList.add('migrate-container');
+
+    this.playButtonNode = this.makePlayButton();
+    this.migrateContainer.append(this.playButtonNode);
+
+    this.videoContainer = this.makeVideoContainer();
+
+    this.wrapper.append(this.videoContainer, this.migrateContainer, overlay);
 
     this.videoContainer.onloadedmetadata = () => {
       this.state.videoDuration = Math.floor(this.videoContainer.duration);
@@ -132,8 +179,9 @@ export default class VideoPlugin {
       this.timers.forEach((el) => {
         el.textContent = this.state.videoDuration - Math.floor(event.target.currentTime);
       });
+      this.passNewCoords();
     }
 
-    root.append(wrapper);
+    root.append(this.wrapper);
   }
 };
